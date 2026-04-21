@@ -18,7 +18,7 @@ func (h *Handler) GetUsers(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	limit := 10
-	offset := 0
+	page := 1
 
 	if l := c.QueryParam("limit"); l != "" {
 		val, err := strconv.Atoi(l)
@@ -28,13 +28,15 @@ func (h *Handler) GetUsers(c echo.Context) error {
 		limit = val
 	}
 
-	if o := c.QueryParam("offset"); o != "" {
-		val, err := strconv.Atoi(o)
+	if p := c.QueryParam("page"); p != "" {
+		val, err := strconv.Atoi(p)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "invalid offset")
+			return c.JSON(http.StatusBadRequest, "invalid page")
 		}
-		offset = val
+		page = val
 	}
+
+	offset := (page - 1) * limit
 
 	users, err := h.UserService.GetUsers(ctx, limit, offset)
 	if err != nil {
