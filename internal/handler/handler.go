@@ -17,7 +17,26 @@ func (h *Handler) GetUsers(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	users, err := h.UserService.GetUsers(ctx)
+	limit := 10
+	offset := 0
+
+	if l := c.QueryParam("limit"); l != "" {
+		val, err := strconv.Atoi(l)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "invalid limit")
+		}
+		limit = val
+	}
+
+	if o := c.QueryParam("offset"); o != "" {
+		val, err := strconv.Atoi(o)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "invalid offset")
+		}
+		offset = val
+	}
+
+	users, err := h.UserService.GetUsers(ctx, limit, offset)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

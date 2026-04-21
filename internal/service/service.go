@@ -47,8 +47,8 @@ func (s *UserService) validate(u model.User) error {
 	return nil
 }
 
-func (s *UserService) GetUsers(ctx context.Context) ([]model.User, error) {
-	return s.UserRepository.GetUsers(ctx)
+func (s *UserService) GetUsers(ctx context.Context, limit, offset int) ([]model.User, error) {
+	return s.UserRepository.GetUsers(ctx, limit, offset)
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int) (model.User, error) {

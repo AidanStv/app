@@ -21,9 +21,9 @@ type UserRepository struct {
 // 5) text of errors starts with lowercase letter +++
 // 6) in r.DeleteUser use only id, not full user struct +++
 
-func (r *UserRepository) GetUsers(ctx context.Context) ([]model.User, error) {
+func (r *UserRepository) GetUsers(ctx context.Context, limit, offset int) ([]model.User, error) {
 
-	rows, err := r.Conn.Query(ctx, "select id, name, university from users")
+	rows, err := r.Conn.Query(ctx, "SELECT id, name, university FROM users ORDER BY id LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("SQL query execution: %w", err)
 	}
