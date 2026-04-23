@@ -20,35 +20,8 @@ type Pagination struct {
 	Limit int
 }
 
-func (s *UserService) validateID(u model.User) error {
-	if u.ID <= 0 {
-		return errors.New("invalid user id")
-	}
-
-	if u.Name == "" {
-		return errors.New("invalid name")
-	}
-
-	if u.University == "" {
-		return errors.New("invalid university")
-	}
-	return nil
-}
-
-func (s *UserService) validate(u model.User) error {
-	if u.Name == "" {
-		return errors.New("invalid name")
-	}
-
-	if u.University == "" {
-		return errors.New("invalid university")
-	}
-
-	return nil
-}
-
 func (s *UserService) GetUsers(ctx context.Context, limit, offset int) ([]model.User, error) {
-	return s.UserRepository.GetUsers(ctx, limit, offset)
+	return s.UserRepository.GetUsers(ctx, offset)
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int) (model.User, error) {
@@ -60,7 +33,7 @@ func (s *UserService) GetUser(ctx context.Context, id int) (model.User, error) {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, u model.User) error {
-	if err := s.validateID(u); err != nil {
+	if err := u.Validate(); err != nil {
 		return err
 	}
 
@@ -68,7 +41,11 @@ func (s *UserService) CreateUser(ctx context.Context, u model.User) error {
 }
 
 func (s *UserService) UpdateUser(ctx context.Context, u model.User) error {
-	if err := s.validate(u); err != nil {
+	if u.ID <= 0 {
+		return errors.New("invalid id")
+	}
+
+	if err := u.Validate(); err != nil {
 		return err
 	}
 

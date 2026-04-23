@@ -58,7 +58,7 @@ func (h *Handler) DeleteHandler(c echo.Context) error {
 
 	err = h.UserService.DeleteUser(ctx, id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, "user deleted")
@@ -80,7 +80,7 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 	u.ID = id
 	err = h.UserService.UpdateUser(c.Request().Context(), u)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, "user updated")
@@ -96,7 +96,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 
 	err := h.UserService.CreateUser(c.Request().Context(), u)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, "user created")

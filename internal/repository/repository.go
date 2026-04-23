@@ -13,17 +13,9 @@ type UserRepository struct {
 	Conn *pgx.Conn
 }
 
-// TODO:
-// 1) Rename error messages (only english) +++
-// 2) paste nil, not empty slice +++
-// 3) in main.go check errors. +++
-// 4) in rows.Affected use errors.New() +++
-// 5) text of errors starts with lowercase letter +++
-// 6) in r.DeleteUser use only id, not full user struct +++
+func (r *UserRepository) GetUsers(ctx context.Context, offset int) ([]model.User, error) {
 
-func (r *UserRepository) GetUsers(ctx context.Context, limit, offset int) ([]model.User, error) {
-
-	rows, err := r.Conn.Query(ctx, "SELECT id, name, university FROM users ORDER BY id LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := r.Conn.Query(ctx, "SELECT id, name, university FROM users ORDER BY id LIMIT $1 OFFSET $2", offset)
 	if err != nil {
 		return nil, fmt.Errorf("SQL query execution: %w", err)
 	}

@@ -11,6 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// TODO:
+// 1) errors.Is()
 func main() {
 
 	ctx := context.Background()
