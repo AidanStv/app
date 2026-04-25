@@ -21,7 +21,7 @@ type Pagination struct {
 }
 
 func (s *UserService) GetUsers(ctx context.Context, limit, offset int) ([]model.User, error) {
-	return s.UserRepository.GetUsers(ctx, offset)
+	return s.UserRepository.GetUsers(ctx, limit, offset)
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int) (model.User, error) {

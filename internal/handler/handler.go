@@ -20,14 +20,6 @@ func (h *Handler) GetUsers(c echo.Context) error {
 	limit := 10
 	page := 1
 
-	if l := c.QueryParam("limit"); l != "" {
-		val, err := strconv.Atoi(l)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, "invalid limit")
-		}
-		limit = val
-	}
-
 	if p := c.QueryParam("page"); p != "" {
 		val, err := strconv.Atoi(p)
 		if err != nil {
