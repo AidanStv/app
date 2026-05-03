@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"my-project/internal/errIs"
 	"my-project/internal/model"
+	"my-project/pkg/liberror"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -35,7 +35,7 @@ func (r *UserRepository) GetUsers(ctx context.Context, limit, offset int) ([]mod
 	}
 
 	if len(users) == 0 {
-		return nil, errIs.ErrUsersNotFound
+		return nil, liberror.ErrUsersNotFound
 	}
 
 	return users, nil

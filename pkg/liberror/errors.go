@@ -1,4 +1,4 @@
-package errIs
+package liberror
 
 import "errors"
 

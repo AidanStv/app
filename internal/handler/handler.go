@@ -2,9 +2,9 @@ package handler
 
 import (
 	"errors"
-	"my-project/internal/errIs"
 	"my-project/internal/model"
 	"my-project/internal/service"
+	"my-project/pkg/liberror"
 
 	"net/http"
 	"strconv"
@@ -35,7 +35,7 @@ func (h *Handler) GetUsers(c echo.Context) error {
 
 	users, err := h.UserService.GetUsers(ctx, limit, offset)
 	if err != nil {
-		if errors.Is(err, errIs.ErrUsersNotFound) {
+		if errors.Is(err, liberror.ErrUsersNotFound) {
 			return c.JSON(http.StatusNotFound, "users not found")
 		}
 		return c.JSON(http.StatusInternalServerError, err.Error())
