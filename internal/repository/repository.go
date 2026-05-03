@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"my-project/internal/errIs"
 	"my-project/internal/model"
 
 	"github.com/jackc/pgx/v5"
@@ -24,14 +25,17 @@ func (r *UserRepository) GetUsers(ctx context.Context, limit, offset int) ([]mod
 	var users []model.User
 	for rows.Next() {
 		var u model.User
-		err := rows.Scan(&u.ID, &u.Name, &u.University)
-		if err != nil {
+		if err := rows.Scan(&u.ID, &u.Name, &u.University); err != nil {
 			return nil, fmt.Errorf("scan user: %w", err)
 		}
 		users = append(users, u)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("rows: %w", err)
+	}
+
+	if len(users) == 0 {
+		return nil, errIs.ErrUsersNotFound
 	}
 
 	return users, nil
