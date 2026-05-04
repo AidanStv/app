@@ -56,6 +56,9 @@ func (h *Handler) DeleteHandler(c echo.Context) error {
 
 	err = h.UserService.DeleteUser(ctx, id)
 	if err != nil {
+		if errors.Is(err, liberror.ErrUserNotFound) {
+			return c.JSON(http.StatusNotFound, "user not found")
+		}
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -63,8 +66,8 @@ func (h *Handler) DeleteHandler(c echo.Context) error {
 }
 
 func (h *Handler) UpdateUser(c echo.Context) error {
-
 	idParam := c.Param("id")
+
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "bad id")
@@ -76,9 +79,13 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 	}
 
 	u.ID = id
+
 	err = h.UserService.UpdateUser(c.Request().Context(), u)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		if errors.Is(err, liberror.ErrUserNotFound) {
+			return c.JSON(http.StatusNotFound, "user not found")
+		}
+		return c.JSON(http.StatusInternalServerError, "internal server error")
 	}
 
 	return c.JSON(http.StatusOK, "user updated")
@@ -94,7 +101,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 
 	err := h.UserService.CreateUser(c.Request().Context(), u)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, "user created")

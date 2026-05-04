@@ -45,6 +45,9 @@ func (r *UserRepository) GetUser(ctx context.Context, id int) (model.User, error
 	var u model.User
 	err := r.Conn.QueryRow(ctx, "select id, name, university from users where id = $1", id).Scan(&u.ID, &u.Name, &u.University)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return model.User{}, liberror.ErrUserNotFound
+		}
 		return model.User{}, fmt.Errorf("scan user: %w", err)
 	}
 	return u, nil
@@ -56,7 +59,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, u model.User) error {
 		return fmt.Errorf("SQL query execution error: %w", err)
 	}
 	if commandTag.RowsAffected() != 1 {
-		return errors.New("user not created")
+		return liberror.ErrUserNotCreate
 	}
 	return nil
 }
@@ -68,7 +71,7 @@ func (r *UserRepository) UpdateUser(ctx context.Context, u model.User) error {
 		return fmt.Errorf("SQL query execution error: %w", err)
 	}
 	if commandTag.RowsAffected() != 1 {
-		return errors.New("user not updated")
+		return liberror.ErrUserNotUpdate
 	}
 	return nil
 }
@@ -79,7 +82,7 @@ func (r *UserRepository) DeleteUser(ctx context.Context, id int) error {
 		return fmt.Errorf("SQL query execution: %w", err)
 	}
 	if commandTag.RowsAffected() != 1 {
-		return errors.New("user not deleted")
+		return liberror.ErrUserNotDelete
 	}
 	return nil
 }
