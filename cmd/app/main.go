@@ -35,10 +35,11 @@ func main() {
 	e := echo.New()
 
 	e.GET("/users", h.GetUsers)
-	// e.GET("/users/:id", h.GetUser)
+	e.GET("/users/:id", h.GetUser)
 	e.POST("/users", h.CreateUser)
 	e.PATCH("/users/:id", h.UpdateUser)
 	e.DELETE("/users/:id", h.DeleteHandler)
+	e.POST("/login", h.Login)
 
 	e.Start(":8080")
 }

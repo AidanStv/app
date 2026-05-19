@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"my-project/internal/model"
 	"my-project/internal/service"
 	"my-project/pkg/liberror"
@@ -10,10 +11,80 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
+
+func passwordBcrypt() {
+	password := []byte("123")
+	cost := 10
+
+	hash, err := bcrypt.GenerateFromPassword(password, cost)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf(string(hash))
+}
+
+func (h *Handler) Login(c echo.Context) error {
+	var req model.LoginRequest
+
+	//с.Bind записывает из боди в req
+	if err := c.Bind(&req); err != nil {
+		return err
+	}
+
+	user, err := h.UserService.GetEmail(
+		c.Request().Context(),
+		req.Email,
+	)
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusUnauthorized,
+			"user not found",
+		)
+	}
+
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(user.PasswordHash),
+		[]byte(req.Password),
+	)
+
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusUnauthorized,
+			"invalid password",
+		)
+	}
+	return c.JSON(200, "login success")
+}
 
 type Handler struct {
 	UserService *service.UserService
+}
+
+func (h *Handler) GetUser(c echo.Context) error {
+
+	ctx := c.Request().Context()
+
+	idParam := c.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "invalid user id")
+	}
+
+	user, err := h.UserService.GetUser(ctx, id)
+	if err != nil {
+
+		if errors.Is(err, liberror.ErrUserNotFound) {
+			return c.JSON(http.StatusNotFound, "user not found")
+		}
+
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, user)
 }
 
 func (h *Handler) GetUsers(c echo.Context) error {

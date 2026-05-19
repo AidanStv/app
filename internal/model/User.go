@@ -5,9 +5,16 @@ import (
 )
 
 type User struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	University string `json:"university"`
+	Email        string `json:"email"`
+	PasswordHash string `json:"password"`
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	University   string `json:"university"`
+}
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (u *User) Validate() error {
