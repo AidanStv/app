@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"my-project/internal/model"
 	"my-project/internal/service"
 	"my-project/pkg/liberror"
@@ -14,16 +13,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func passwordBcrypt() {
-	password := []byte("123")
-	cost := 10
+func (h *Handler) Register(c echo.Context) error {
+	var req model.RegisterRequest
 
-	hash, err := bcrypt.GenerateFromPassword(password, cost)
-	if err != nil {
-		panic(err)
+	if err := c.Bind(&req); err != nil {
+		return err
 	}
 
-	fmt.Printf(string(hash))
+	err := h.UserService.Register(c.Request().Context(), req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(200, "user created")
 }
 
 func (h *Handler) Login(c echo.Context) error {

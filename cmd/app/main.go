@@ -40,6 +40,6 @@ func main() {
 	e.PATCH("/users/:id", h.UpdateUser)
 	e.DELETE("/users/:id", h.DeleteHandler)
 	e.POST("/login", h.Login)
-
+	e.POST("/register", h.Register)
 	e.Start(":8080")
 }

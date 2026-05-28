@@ -12,6 +12,14 @@ type User struct {
 	University   string `json:"university"`
 }
 
+type RegisterRequest struct {
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	University string `json:"university"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+}
+
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`

@@ -5,7 +5,26 @@ import (
 	"errors"
 	"my-project/internal/model"
 	"my-project/internal/repository"
+
+	"golang.org/x/crypto/bcrypt"
 )
+
+func (s *UserService) Register(ctx context.Context, req model.RegisterRequest) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(req.Password),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		return err
+	}
+	user := model.User{
+		Name:         req.Name,
+		University:   req.University,
+		Email:        req.Email,
+		PasswordHash: string(hashedPassword),
+	}
+	return s.UserRepository.CreateUser(ctx, user)
+}
 
 type UserService struct {
 	UserRepository *repository.UserRepository

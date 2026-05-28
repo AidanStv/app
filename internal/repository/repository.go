@@ -54,7 +54,7 @@ func (r *UserRepository) GetEmail(ctx context.Context, email string) (*model.Use
 
 func (r *UserRepository) GetUser(ctx context.Context, id int) (model.User, error) {
 	var u model.User
-	err := r.Conn.QueryRow(ctx, "select id, name, university from users where id = $1", id).Scan(&u.ID, &u.Name, &u.University)
+	err := r.Conn.QueryRow(ctx, "select id, email, name, university from users where id = $1", id).Scan(&u.ID, &u.Email, &u.Name, &u.University)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return model.User{}, liberror.ErrUserNotFound
@@ -65,7 +65,7 @@ func (r *UserRepository) GetUser(ctx context.Context, id int) (model.User, error
 }
 
 func (r *UserRepository) CreateUser(ctx context.Context, u model.User) error {
-	commandTag, err := r.Conn.Exec(context.Background(), "insert into users(name, university) values($1, $2)", u.Name, u.University)
+	commandTag, err := r.Conn.Exec(context.Background(), "insert into users(name, university, email, password_hash) values($1, $2, $3, $4)", u.Name, u.University, u.Email, u.PasswordHash)
 	if err != nil {
 		return fmt.Errorf("SQL query execution error: %w", err)
 	}
