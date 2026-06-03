@@ -16,7 +16,7 @@ type UserRepository struct {
 
 func (r *UserRepository) GetUsers(ctx context.Context, limit, offset int) ([]model.User, error) {
 
-	rows, err := r.Conn.Query(ctx, "SELECT id, name, university FROM users ORDER BY id limit $1 offset $2", limit, offset)
+	rows, err := r.Conn.Query(ctx, "SELECT id, name, university, email FROM users ORDER BY id limit $1 offset $2", limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("SQL query execution: %w", err)
 	}
@@ -25,7 +25,7 @@ func (r *UserRepository) GetUsers(ctx context.Context, limit, offset int) ([]mod
 	var users []model.User
 	for rows.Next() {
 		var u model.User
-		if err := rows.Scan(&u.ID, &u.Name, &u.University); err != nil {
+		if err := rows.Scan(&u.ID, &u.Name, &u.University, &u.Email); err != nil {
 			return nil, fmt.Errorf("scan user: %w", err)
 		}
 		users = append(users, u)

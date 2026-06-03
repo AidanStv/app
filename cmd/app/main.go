@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"my-project/internal/handler"
+	"my-project/internal/middleware"
 	"my-project/internal/repository"
 	"my-project/internal/service"
 
@@ -34,12 +35,14 @@ func main() {
 
 	e := echo.New()
 
-	e.GET("/users", h.GetUsers)
-	e.GET("/users/:id", h.GetUser)
-	e.POST("/users", h.CreateUser)
-	e.PATCH("/users/:id", h.UpdateUser)
-	e.DELETE("/users/:id", h.DeleteHandler)
 	e.POST("/login", h.Login)
 	e.POST("/register", h.Register)
+
+	e.GET("/users", h.GetUsers, middleware.JWTMiddleware)
+	e.GET("/users/:id", h.GetUser, middleware.JWTMiddleware)
+	e.POST("/users", h.CreateUser, middleware.JWTMiddleware)
+	e.PATCH("/users/:id", h.UpdateUser, middleware.JWTMiddleware)
+	e.DELETE("/users/:id", h.DeleteHandler, middleware.JWTMiddleware)
+
 	e.Start(":8080")
 }

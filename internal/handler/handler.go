@@ -4,8 +4,8 @@ import (
 	"errors"
 	"my-project/internal/model"
 	"my-project/internal/service"
+	"my-project/pkg/jwt"
 	"my-project/pkg/liberror"
-
 	"net/http"
 	"strconv"
 
@@ -51,13 +51,17 @@ func (h *Handler) Login(c echo.Context) error {
 		[]byte(req.Password),
 	)
 
+	token, err := jwt.GenerateToken(
+		user.ID,
+		user.Email,
+	)
+
 	if err != nil {
-		return echo.NewHTTPError(
-			http.StatusUnauthorized,
-			"invalid password",
-		)
+		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(200, "login success")
+	return c.JSON(http.StatusOK, map[string]string{
+		"token": token,
+	})
 }
 
 type Handler struct {
