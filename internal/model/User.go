@@ -25,6 +25,11 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type LoginResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 func (u *User) Validate() error {
 	if u.Name == "" {
 		return errors.New("invalid name")

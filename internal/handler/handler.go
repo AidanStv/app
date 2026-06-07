@@ -51,7 +51,19 @@ func (h *Handler) Login(c echo.Context) error {
 		[]byte(req.Password),
 	)
 
-	token, err := jwt.GenerateToken(
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusUnauthorized,
+			"bad password",
+		)
+	}
+
+	accessToken, err := jwt.GenerateAccessToken(
+		user.ID,
+		user.Email,
+	)
+
+	refreshToken, err := jwt.GenerateRefreshToken(
 		user.ID,
 		user.Email,
 	)
@@ -59,8 +71,9 @@ func (h *Handler) Login(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{
-		"token": token,
+	return c.JSON(http.StatusOK, model.LoginResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	})
 }
 
