@@ -13,6 +13,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type Handler struct {
+	UserService *service.UserService
+}
+
 func (h *Handler) Register(c echo.Context) error {
 	var req model.RegisterRequest
 
@@ -63,6 +67,10 @@ func (h *Handler) Login(c echo.Context) error {
 		user.Email,
 	)
 
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
 	refreshToken, err := jwt.GenerateRefreshToken(
 		user.ID,
 		user.Email,
@@ -77,8 +85,29 @@ func (h *Handler) Login(c echo.Context) error {
 	})
 }
 
-type Handler struct {
-	UserService *service.UserService
+func (h *Handler) Refresh(c echo.Context) error {
+	var req model.RefreshRequest
+
+	if err := c.Bind(&req); err != nil {
+		return err
+	}
+
+	claims, err := jwt.ValidateToken(
+		req.RefreshToken,
+	)
+	if err != nil {
+		return err
+	}
+
+	accessToken, err := jwt.GenerateAccessToken(
+		claims.UserID,
+		claims.Email,
+	)
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"access_token": accessToken,
+	})
+
 }
 
 func (h *Handler) GetUser(c echo.Context) error {

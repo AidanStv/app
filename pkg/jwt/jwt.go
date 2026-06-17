@@ -33,7 +33,7 @@ func GenerateRefreshToken(userID int, email string) (string, error) {
 		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(
-				time.Now().Add(15 * time.Minute),
+				time.Now().Add(7 * 24 * time.Hour),
 			),
 		},
 	}
@@ -44,30 +44,31 @@ func GenerateRefreshToken(userID int, email string) (string, error) {
 	return token.SignedString(key)
 }
 
-func GenerateToken(userID int, email string) (string, error) {
-
-	token := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
-		jwt.MapClaims{
-			"user_id": userID,
-			"email":   email,
-			"exp":     time.Now().Add(24 * time.Hour).Unix(),
+func ValidateToken(tokenString string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&Claims{},
+		func(token *jwt.Token) (any, error) {
+			return key, nil
 		},
 	)
-
-	tokenString, err := token.SignedString(key)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return tokenString, nil
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return nil, err
+	}
+
+	return claims, nil
 }
 
-func ValidateToken(tokenString string) (*jwt.Token, error) {
-	return jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
-		return key, nil
-	})
-}
+// func ValidateToken(tokenString string) (*jwt.Token, error) {
+// 	return jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+// 		return key, nil
+// 	})
+// }
 
 type Claims struct {
 	UserID int    `json:"user_id"`

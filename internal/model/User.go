@@ -30,6 +30,10 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+type RefreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
 func (u *User) Validate() error {
 	if u.Name == "" {
 		return errors.New("invalid name")
