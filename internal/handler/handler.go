@@ -39,10 +39,7 @@ func (h *Handler) Login(c echo.Context) error {
 		return err
 	}
 
-	user, err := h.UserService.GetEmail(
-		c.Request().Context(),
-		req.Email,
-	)
+	user, err := h.UserService.GetByEmail(c.Request().Context(), req.Email)
 	if err != nil {
 		return echo.NewHTTPError(
 			http.StatusUnauthorized,
@@ -54,7 +51,6 @@ func (h *Handler) Login(c echo.Context) error {
 		[]byte(user.PasswordHash),
 		[]byte(req.Password),
 	)
-
 	if err != nil {
 		return echo.NewHTTPError(
 			http.StatusUnauthorized,

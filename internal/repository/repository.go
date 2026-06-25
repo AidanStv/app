@@ -41,7 +41,7 @@ func (r *UserRepository) GetUsers(ctx context.Context, limit, offset int) ([]mod
 	return users, nil
 }
 
-func (r *UserRepository) GetEmail(ctx context.Context, email string) (*model.User, error) {
+func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*model.User, error) {
 	var u model.User
 	err := r.Conn.QueryRow(ctx, "SELECT id, email, password_hash FROM users WHERE email = $1", email).Scan(&u.ID, &u.Email, &u.PasswordHash)
 	if err != nil {

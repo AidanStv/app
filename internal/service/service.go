@@ -43,8 +43,8 @@ func (s *UserService) GetUsers(ctx context.Context, limit, offset int) ([]model.
 	return s.UserRepository.GetUsers(ctx, limit, offset)
 }
 
-func (s *UserService) GetEmail(ctx context.Context, email string) (*model.User, error) {
-	return s.UserRepository.GetEmail(ctx, email)
+func (s *UserService) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+	return s.UserRepository.GetByEmail(ctx, email)
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int) (model.User, error) {

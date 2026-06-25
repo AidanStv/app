@@ -11,9 +11,7 @@ import (
 func JWTMiddleware(handler echo.HandlerFunc) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-
 		authHeader := c.Request().Header.Get("Authorization")
-
 		if authHeader == "" {
 			return echo.NewHTTPError(
 				http.StatusUnauthorized,
@@ -21,11 +19,7 @@ func JWTMiddleware(handler echo.HandlerFunc) echo.HandlerFunc {
 			)
 		}
 
-		tokenString := strings.TrimPrefix(
-			authHeader,
-			"Bearer ",
-		)
-
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		_, err := myjwt.ValidateToken(tokenString)
 		if err != nil {
 			return echo.NewHTTPError(
