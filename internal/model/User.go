@@ -34,6 +34,12 @@ type RefreshRequest struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+type RefreshToken struct {
+	ID     int
+	UserID int
+	Token  string
+}
+
 func (u *User) Validate() error {
 	if u.Name == "" {
 		return errors.New("invalid name")

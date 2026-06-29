@@ -72,6 +72,12 @@ func (h *Handler) Login(c echo.Context) error {
 		user.Email,
 	)
 
+	err = h.UserService.SaveRefreshToken(c.Request().Context(), user.ID, refreshToken)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -88,22 +94,28 @@ func (h *Handler) Refresh(c echo.Context) error {
 		return err
 	}
 
-	claims, err := jwt.ValidateToken(
-		req.RefreshToken,
-	)
+	claims, err := jwt.ValidateToken(req.RefreshToken)
 	if err != nil {
 		return err
 	}
 
-	accessToken, err := jwt.GenerateAccessToken(
-		claims.UserID,
-		claims.Email,
-	)
+	exists, err := h.UserService.RefreshTokenExists(c.Request().Context(), req.RefreshToken)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return echo.NewHTTPError(http.StatusUnauthorized, "refresh token not found")
+	}
+
+	accessToken, err := jwt.GenerateAccessToken(claims.UserID, claims.Email)
+	if err != nil {
+		return err
+	}
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"access_token": accessToken,
 	})
-
 }
 
 func (h *Handler) GetUser(c echo.Context) error {
@@ -219,4 +231,23 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, "user created")
+}
+
+func (h *Handler) Logout(c echo.Context) error {
+
+	var req model.RefreshRequest
+
+	if err := c.Bind(&req); err != nil {
+		return err
+	}
+
+	err := h.UserService.DeleteRefreshToken(
+		c.Request().Context(),
+		req.RefreshToken,
+	)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, "logout success")
 }

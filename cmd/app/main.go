@@ -46,6 +46,7 @@ func main() {
 	e.GET("/users/:id", h.GetUser, middleware.JWTMiddleware)
 	e.PATCH("/users/:id", h.UpdateUser, middleware.JWTMiddleware)
 	e.DELETE("/users/:id", h.DeleteHandler, middleware.JWTMiddleware)
+	e.POST("/logout", h.Logout, middleware.JWTMiddleware)
 
 	e.Start(":8080")
 }

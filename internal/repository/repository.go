@@ -97,3 +97,38 @@ func (r *UserRepository) DeleteUser(ctx context.Context, id int) error {
 	}
 	return nil
 }
+
+func (r *UserRepository) SaveRefreshToken(ctx context.Context, userID int, token string) error {
+	_, err := r.Conn.Exec(ctx, `INSERT INTO refresh_tokens (user_id, token) VALUES ($1, $2)`, userID, token)
+	return err
+}
+
+func (r *UserRepository) RefreshTokenExists(ctx context.Context, token string) (bool, error) {
+	var exists bool
+
+	err := r.Conn.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM refresh_tokens WHERE token = $1)`, token).Scan(&exists)
+
+	return exists, err
+}
+
+func (r *UserRepository) DeleteRefreshToken(
+	ctx context.Context,
+	token string,
+) error {
+
+	commandTag, err := r.Conn.Exec(
+		ctx,
+		`DELETE FROM refresh_tokens WHERE token = $1`,
+		token,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if commandTag.RowsAffected() != 1 {
+		return errors.New("refresh token not found")
+	}
+
+	return nil
+}

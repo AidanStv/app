@@ -82,3 +82,23 @@ func (s *UserService) DeleteUser(ctx context.Context, id int) error {
 
 	return s.UserRepository.DeleteUser(ctx, id)
 }
+
+func (s *UserService) SaveRefreshToken(ctx context.Context, userID int, token string) error {
+	return s.UserRepository.SaveRefreshToken(ctx, userID, token)
+}
+
+func (s *UserService) RefreshTokenExists(ctx context.Context, token string) (bool, error) {
+
+	return s.UserRepository.RefreshTokenExists(ctx, token)
+}
+
+func (s *UserService) DeleteRefreshToken(
+	ctx context.Context,
+	token string,
+) error {
+
+	return s.UserRepository.DeleteRefreshToken(
+		ctx,
+		token,
+	)
+}
