@@ -14,7 +14,8 @@ import (
 )
 
 type Handler struct {
-	UserService *service.UserService
+	UserService    *service.UserService
+	ProductService *service.ProductService
 }
 
 func (h *Handler) Register(c echo.Context) error {
@@ -78,9 +79,6 @@ func (h *Handler) Login(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
 	return c.JSON(http.StatusOK, model.LoginResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,

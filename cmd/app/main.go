@@ -30,15 +30,33 @@ func main() {
 		Conn: conn,
 	}
 
+	ProductRepository := &repository.ProductRepository{
+		Conn: conn,
+	}
+
 	UserService := service.NewUserService(UserRepository)
 
-	h := &handler.Handler{UserService: UserService}
+	ProductService := &service.ProductService{
+		ProductRepository: ProductRepository,
+	}
+
+	h := &handler.Handler{
+		UserService:    UserService,
+		ProductService: ProductService,
+	}
 
 	e := echo.New()
 
 	e.POST("/login", h.Login)
 	e.POST("/register", h.Register)
 	e.POST("/refresh", h.Refresh)
+
+	// CRUD Products
+	e.POST("/products", h.CreateProduct, middleware.JWTMiddleware)
+	e.GET("/products", h.GetProducts, middleware.JWTMiddleware)
+	e.GET("/products/:id", h.GetProduct, middleware.JWTMiddleware)
+	e.PATCH("/products/:id", h.UpdateProduct, middleware.JWTMiddleware)
+	e.DELETE("/products/:id", h.DeleteProduct, middleware.JWTMiddleware)
 
 	// CRUD Users
 	e.POST("/users", h.CreateUser, middleware.JWTMiddleware)
