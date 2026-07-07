@@ -11,9 +11,9 @@ var (
 )
 
 var (
-	ErrProductssNotFound = errors.New("users not found")
-	ErrProductsNotFound  = errors.New("user not found")
-	ErrProductsNotCreate = errors.New("user not create")
-	ErrProductsNotUpdate = errors.New("user not update")
-	ErrProductsNotDelete = errors.New("user not delete")
+	ErrProductssNotFound = errors.New("product not found")
+	ErrProductsNotFound  = errors.New("product not found")
+	ErrProductsNotCreate = errors.New("product not create")
+	ErrProductsNotUpdate = errors.New("product not update")
+	ErrProductsNotDelete = errors.New("product not delete")
 )

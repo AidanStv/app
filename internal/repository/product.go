@@ -66,7 +66,7 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, p model.Product) 
 }
 
 func (r *ProductRepository) UpdateProduct(ctx context.Context, p model.Product) error {
-	query := "update products set name = $1, price = $2 where price = $3"
+	query := "UPDATE products SET name = $1, price = $2 WHERE id = $3"
 	commandTag, err := r.Conn.Exec(context.Background(), query, p.Name, p.Price, p.ID)
 	if err != nil {
 		return fmt.Errorf("SQL query execution error: %w", err)
